@@ -44,5 +44,14 @@ if ($tarefa) {
     gravar_tarefa($conexao, $tarefa);
 }
 
-include "template.php";
+$tarefa = [
+    'id'         => 0,
+    'nome'       => '',
+    'descricao'  => '',
+    'prazo'      => '',
+    'prioridade' => 1,
+    'concluida'  => ''
+];
+
+require "template.php";
 ?>

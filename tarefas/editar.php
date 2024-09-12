@@ -1,6 +1,6 @@
 <?php
 
-session_star();
+session_start();
 
 require "banco.php";
 require "ajudantes.php";
@@ -17,11 +17,11 @@ if (array_key_exists('nome', $_GET) && $_GET['nome'] != '') {
         'concluida' => 0,
     ];
 
-    if (array_key_exists('descricao', '$_GET')) {
+    if(array_key_exists('descricao', $_GET)) {
         $tarefa['descricao'] = $_GET['descricao'];
     }
 
-    if(array_key_exists('prazo', $_GET)) {
+    if (array_key_exists('prazo', $_GET)) {
         $tarefa['prazo'] =
             traduz_data_para_banco($_GET['prazo']);
     }
