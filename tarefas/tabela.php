@@ -10,7 +10,9 @@
         <?php foreach ($lista_tarefas as $tarefa) : ?>
             <tr>
                 <td>
+                    <a href="tarefa.php?id=<?php echo $tarefa['id']; ?>">
                     <?php echo $tarefa['nome']; ?>
+                    </a>
                 </td>
                 <td>
                     <?php echo $tarefa['descricao']; ?>
