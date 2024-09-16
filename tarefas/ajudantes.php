@@ -27,11 +27,15 @@ function traduz_data_para_banco($data)
         return "";
     }
 
-    $dados = explode("/", $data);
+    $partes = explode("/", $data);
 
-    $data_banco = "{$dados[2]}-{$dados[1]}-{$dados[0]}";
+    if (count($partes) != 3) {
+        return $data;
+    }
 
-    return $data_banco;
+    $objeto_data = DateTime::crateFromFormat('d/m/Y', $data);
+
+    return $objeto_data->format('Y-m-d');
 }
 
 function traduz_data_para_exibir($data)
@@ -40,24 +44,17 @@ function traduz_data_para_exibir($data)
         return "";
     }
 
-    $dados = explode("-", $data);
-    $data_exibir = "{$dados[2]}/{$dados[1]}/{$dados[0]}";
-
-    return $data_exibir;
-}
-
-/*Outras maneira de fazer a formatação das datas (usando a classe DateTime):
-function traduz_data_para_exibir($data)
-{
-    if($data == "" OR $data == "0000-00-00") {
-        return "";
+    $partes = explode("-", $data);
+    
+    if (count($partes) != 3) {
+        return $data;
     }
 
     $objeto_data = DateTime::createFromFormat('Y-m-d', $data);
 
-    return $objeto_data -> format('d/m/Y');
+    return $objeto_data->format('d/m/Y');
+
 }
-*/
 
 function traduz_concluida($concluida)
 {
@@ -67,3 +64,29 @@ function traduz_concluida($concluida)
     return 'Não';
 }
 
+function tem_post() 
+{
+    if (count($_POST) > 0) {
+        return true;
+    }
+
+    return false;
+}
+
+function validar_data($data)
+{
+    $padrao = '/^[0-9]{1,2}\/[0-9]{1,2}\/[0-9]{4}$/';
+    $resultado = preg_match($padrao, $data);
+
+    if ($resultado == 0) {
+        return false;
+    }
+
+    $dados = explode('/', $data);
+
+    $dia = $dados[0];
+    $mes = $dados[1];
+    $ano = $dados[2];
+
+    return checkdate($mes, $dia, $ano);
+}

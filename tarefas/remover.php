@@ -4,4 +4,4 @@ require "banco.php";
 
 remover_tarefa($conexao, $_GET['id']);
 
-header('Location: tarefas.php');
+header('Location: tarefas/tarefas.php');

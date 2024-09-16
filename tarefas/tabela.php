@@ -5,7 +5,7 @@
             <th>Prazo</th>
             <th>Prioridade</th>
             <th>Concluída</th>
-            <th>Opções</th> <!-- A nova coluna Opções -->
+            <th>Opções</th> 
         </tr>
         <?php foreach ($lista_tarefas as $tarefa) : ?>
             <tr>

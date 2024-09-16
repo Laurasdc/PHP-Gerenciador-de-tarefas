@@ -51,7 +51,7 @@ function gravar_tarefa($conexao, $tarefa)
 
 function buscar_tarefa($conexao, $id) {
     $sqlBusca = 'SELECT * FROM tarefas WHERE id = ' . $id;
-    $resultado - mysqli_query($conexao, $sqlBusca);
+    $resultado = mysqli_query($conexao, $sqlBusca);
 
     return mysqli_fetch_assoc($resultado);
 }
@@ -70,7 +70,7 @@ function editar_tarefa($conexao, $tarefa)
             descricao = '{$tarefa['descricao']}',
             prioridade = {$tarefa['prioridade']},
             prazo = {$prazo}, 
-            concluida = 1tarefa['concluida']}
+            concluida = {$tarefa['concluida']}
         WHERE id = {$tarefa['id']}
     ";
 
@@ -86,5 +86,6 @@ function editar_tarefa($conexao, $tarefa)
 
         mysqli_query($conexao, $sqlRemover);
     }
+
 }
 
