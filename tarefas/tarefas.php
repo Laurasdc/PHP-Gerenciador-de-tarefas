@@ -2,8 +2,11 @@
 
 session_start();
 
+require "config.php";
 require "banco.php";
 require "ajudantes.php";
+require "classes/Tarefa.php";
+require "classes/RepositorioTarefas.php";
 
 $exibir_tabela = true;
 
@@ -15,41 +18,63 @@ $exibir_tabela = true;
 $tem_erros = false;
 $erros_validacao = [];
 
+$repositorio_tarefas = new RepositorioTarefas($mysqli);
+
+$exibir_tabela = true;
+
+$tem_erros = false;
+$erros_validacao = [];
+
+$tarefa = new Tarefa();
+$tarefa->setPrioridade(1);
+
 if(tem_post()) {
-    $tarefa = [
-        'id' => $_POST['id'],
-        'nome' => $_POST['nome'],
-        'descricao' => '',
-        'prazo' => '',
-        'prioridade' => $_POST['prioridade'],
-        'concluida' => 0,
-    ];
-    
-    if (strlen($tarefa['nome']) == 0) {
-        $tem_erros = true;
-        $erros_validacao['nome'] = 'O nome da tarefa é obrigatório!';
-    }
-
-    if (! $tem_erros) {
-        gravar_tarefa($conexao, $tarefa);
-        header('Location: tarefas.php');
-        die();
-    }
-
-    if(array_key_exists('descricao', $_POST)) {
-        $tarefa['descricao'] = $_POST['descricao'];
-    }
-
-    if (array_key_exists('prazo', $_POST) 
-        && strlen($_POST['prazo']) > 0) {
-        if (validar_data($_POST['prazo'])) {
-            $tarefa['prazo'] =
-                traduz_data_para_banco($_POST['prazo']);
+    if (array_key_exists('nome', $_POST)
+        && strlen($_POST['nome']) > 0) {
+            $tarefa->setNome($_POST['nome']);
         } else {
             $tem_erros = true;
-            $erros_validacao['prazo'] =
-                'O prazo não é uma data válida';
+            $erros_validacao['nome'] =
+                'O nome da tarefa é obrigatório';
         }
+
+        if(array_key_exists('descricao', $_POST)) {
+            $tarefa->setDescricao($_POST['descricao']);
+        }
+
+        if(array_key_exists('prazo', $_POST)
+            && strlen($_POST['prazo']) > 0) {
+            if (validar_data($_POST['prazo'])) {
+                $tarefa->setPrazo(
+                    traduz_data_br_para_objetos($_POST['prazo'])
+                );
+            } else {
+                $tem_erros = true;
+                $erros_validacao['prazo'] =
+                    'O prazo não é uma data válida!';
+            }
+        }
+
+        $tarefa->setPrioridade($_POST['prioridade']);
+
+        if(array_key_exists('concluida', $_POST)) {
+            $tarefa->setConcluida(true);
+        }
+
+        if (! $tem_erros) {
+            $repositorio_tarefas->salvar($tarefa);
+
+            if(isset($_POST['lembrete'])
+                && $_POST['lembrete'] == '1') {
+                    enviar_email($tarefa);
+            }
+
+            header('Location: tarefas.php');
+            die();
+        }
+
+
+
     }
     
 
@@ -59,6 +84,10 @@ if(tem_post()) {
 
     $_SESSION['lista_tarefas'][] = $tarefa;
 }
+
+$tarefas = $repositorio_tarefas->buscar();
+
+include "template.php";
 
 if (isset($_SESSION['lista_tarefas'])) {
     $lista_tarefas = $_SESSION['lista_tarefas'];

@@ -1,5 +1,7 @@
 <?php
 
+use PHPMailer\PHPMailer\PHPMailer;
+
 function traduz_prioridade($codigo) 
 {
     $prioridade = '';
@@ -64,6 +66,21 @@ function traduz_concluida($concluida)
     return 'Não';
 }
 
+function traduz_data_br_para_objeto($data)
+{
+    if($data == "") {
+        return "";
+    }
+
+    $dados = explode("/", $data);
+
+    if(count($dados) != 3) {
+        return $data;
+    }
+
+    return DateTime::createFromFormat('d/m/Y', $data);
+}
+
 function tem_post() 
 {
     if (count($_POST) > 0) {
@@ -104,4 +121,63 @@ function tratar_anexo($anexo) {
     );
 
     return true;
+}
+
+function enviar_email($tarefa, $anexos = [])
+{
+    include "bibliotecas/PHPMailer/inc.php";
+
+    $corpo = preparar_corpo_email($tarefa, $anexos);
+
+    $email = new PHPMailer(); //Criação do objeto
+
+    $email-> isSMTP();
+    $email->Host = "smtp.gmail.com";
+    $email->Port = 587;
+    $email->SMTPSecure = 'tls';
+    $email->SMTPAuth = true;
+    $email->Username = "meuemail@gmail.com";
+    $email->Password = "minhasenha";
+    $email->setFrom("meuemail@gmail.com", "Avisador de Tarefas");
+    $email->addAddress(EMAIL_NOTIFICACAO);
+    $email->Subject = "Aviso de tarefa: {$tarefa['nome']}";
+    $email->msgHTML($corpo);
+
+    foreach ($anexos as $anexo) {
+        $email->addAttachment("anexos/{$anexo['arquivo']}");
+    }
+
+    $email->send();
+
+    if (! email->send()) {
+        gravar_log($email->ErrorInfo);
+    }
+
+}
+
+function preparar_corpo_email($tarefa, $anexos)
+{
+    //Falar para o PHP que não é para enviar
+    // o resultado do processamento para o navegador:
+    ob_start();
+
+    //Incluir o arquivo template_email.php?
+    include "template_email.php";
+
+    //Guardar o conteúdo do arquivo em uma variável;
+    $corpo = ob_get_contents();
+
+    //Falar para o PHP que ele pode voltar
+    // a mandar conteúdos para o navegador
+    ob_end_clean();
+    
+    return $corpo;
+}
+
+function gravar_log($mensagem)
+{
+    $datahora = date("Y-m-d H:i:s");
+    $mensagem = "{$datahora} {$mensagem}\n";
+
+    file_put_contents("mensagens.log", $mensagem, FILE_APPEND);
 }

@@ -1,5 +1,6 @@
 <?php
 
+require "config.php";
 include "banco.php";
 include "ajudantes.php";
 

@@ -1,5 +1,6 @@
 <?php
 
+require "config.php";
 include "banco.php";
 
 $anexo = buscar_anexo($conexao, $_GET['id']);
