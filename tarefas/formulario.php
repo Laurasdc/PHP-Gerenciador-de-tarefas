@@ -6,37 +6,37 @@
         <label>
             Tarefa:
             <input type="text" name="nome"
-                value="<?php echo $tarefa->getNome(); ?>" />
-                <span class="erro">
-                    <?php echo $erros_validacao['nome']; ?>
-                </span>
-            <input type="text" name="nome"
+                value="<?php echo htmlentities($tarefa->getNome()); ?>" />
+            <span class="erro">
+                <?php echo isset($erros_validacao['nome']) ? $erros_validacao['nome'] : ''; ?>
+            </span>
+            <input type="text" name="nome_alternativo"
                 value="<?php echo $tarefa['nome']; ?>" />
         </label>
         <label>
-            Descrição(Opcional):
+            Descrição (Opcional):
             <textarea name="descricao">
-                <?php echo $tarefa->getDescricao(); ?>
+                <?php echo htmlebtities ($tarefa->getDescricao()); ?>
             </textarea>
         </label>
         <label>
-            Prazo(Opcional):
-            <input type="text" name="prazo"
+            Prazo (Opcional):
+            <input type="text" name="prazo_tarefa"
                 value="<?php echo traduz_data_para_exibir(
                     $tarefa->getPrazo() 
                 ); ?>"
             />
-                <span class="erro">
-                    <?php echo $erros_validacao['prazo']; ?>
-                </span>
-            <input type="text" name="prazo" value=
+            <span class="erro">
+                <?php echo isset($erros_validacao['prazo']) ? $erros_validacao['prazo'] : ''; ?>
+            </span>
+            <input type="text" name="prazo_alternativo" value=
                 "<?php echo
                     traduz_data_para_exibir($tarefa['prazo']); ?>"
             />
         </label>
         <fieldset>
             <legend>Prioridade:</legend>
-            <input type"radio" name="prioridade" value="1" 
+            <input type="radio" name="prioridade" value="1" 
                 <?php echo ($tarefa->getPrioridade() == 1)
                     ? 'checked' : '';
                 ?> /> Baixa
@@ -54,6 +54,8 @@
                 ?> /> Alta
                 
         </fieldset>
+    </fieldset>
+</form>
         <label>
             Tarefa concluída:
             <input type="checkbox" name="concluida" value="1"

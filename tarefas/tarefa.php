@@ -1,16 +1,15 @@
 <?php
 
 require "config.php";
-include "banco.php";
-include "ajudantes.php";
+require "banco.php";
+require "ajudantes.php";
+require "classes/Tarefa.php";
+require "classes/Anexo.php";
+require "classes/RepositorioTarefas.php";
 
-$tarefa = buscar_tarefa($conexao, $_GET['id']);
+$repositorio_tarefas = new RepositorioTarefas($mysqli);
 
-if (! is_array($tarefa)) {
-    http_response_code(404);
-    echo "Tarefa não encontrada.";
-    die();
-}
+$tarefa = repositorio_tarefas->buscar($_GET['id']);
 
 $tem_erros = false;
 $erros_validacao = array();
@@ -23,13 +22,13 @@ if (tem_post()) {
         $erros_validacao['anexo'] =
             'Você deve selecionar um arquivo para anexar';
     } else {
-        if (tratar_anexo($_FILES['anexo'])) {
-            $nome = $_FILES['anexo']['name'];
-            $anexo = [
-                'tarefa_id' => $tarefa_id,
-                'nome' => substr($nome, 0, -4),
-                'arquivo' => $nome,
-            ];
+        $dados_anexos = $_files['anexo'];
+
+        if (tratar_anexo($dados_anexo)) {
+            $anexo = new Anexo();
+            $anexo->setTarefaId($tarefa_id);
+            $anexo->setNome($dados_anexo['name']);
+            $anexo->setArquivo($dados_anexo['name']);
         } else {
             $tem_erros = true;
             $erros_validacao['anexo'] =
@@ -38,12 +37,9 @@ if (tem_post()) {
     }
 
     if(! $tem_erros) {
-        gravar_anexo($conexao, $anexo);
+        $repositorio_tarefas->salvar_anexo($anexo);
     }
 
 }
-
-$tarefa = buscar_tarefa($conexao, $_GET['id']);
-$anexos = buscar_anexos($conexao, $_GET['id']);
 
 include "template_tarefa.php";

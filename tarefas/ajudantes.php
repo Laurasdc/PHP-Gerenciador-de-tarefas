@@ -74,7 +74,7 @@ function traduz_data_br_para_objeto($data)
 
     $dados = explode("/", $data);
 
-    if(count($dados) != 3) {
+    if (count($dados) != 3) {
         return $data;
     }
 
@@ -123,39 +123,39 @@ function tratar_anexo($anexo) {
     return true;
 }
 
-function enviar_email($tarefa, $anexos = [])
+function enviar_email(Tarefa $tarefa)
 {
     include "bibliotecas/PHPMailer/inc.php";
 
-    $corpo = preparar_corpo_email($tarefa, $anexos);
+    $corpo = preparar_corpo_email($tarefa);
 
-    $email = new PHPMailer(); //Criação do objeto
+    $email = new PHPMailer();
 
-    $email-> isSMTP();
+    $email->isSMTP();
     $email->Host = "smtp.gmail.com";
     $email->Port = 587;
     $email->SMTPSecure = 'tls';
     $email->SMTPAuth = true;
-    $email->Username = "meuemail@gmail.com";
-    $email->Password = "minhasenha";
-    $email->setFrom("meuemail@gmail.com", "Avisador de Tarefas");
+    $email->Username = "seuemail@dominio.com";
+    $email->Password = "senhasecreta";
+    $email->setFrom (
+        "seuemail@dominio.com",
+        "Avisador de Tarefas"
+    );
     $email->addAddress(EMAIL_NOTIFICACAO);
-    $email->Subject = "Aviso de tarefa: {$tarefa['nome']}";
+    $email->Subject = "Aviso de tarefa: {$tarefa->getNome()}";
     $email->msgHTML($corpo);
 
-    foreach ($anexos as $anexo) {
-        $email->addAttachment("anexos/{$anexo['arquivo']}");
+    foreach ($tarefa->getAnexos() as $anexo) {
+        $email-> addAttachment("anexos/{$anexo->getArquivo()}");
     }
 
     $email->send();
 
-    if (! email->send()) {
-        gravar_log($email->ErrorInfo);
-    }
 
 }
 
-function preparar_corpo_email($tarefa, $anexos)
+function preparar_corpo_email(Tarefa $anexo)
 {
     //Falar para o PHP que não é para enviar
     // o resultado do processamento para o navegador:

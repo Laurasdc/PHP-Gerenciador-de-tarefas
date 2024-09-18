@@ -1,6 +1,6 @@
 <?php
 
-class tarefa
+class Tarefa
 {
     private $id = 0;
 
@@ -15,13 +15,13 @@ class tarefa
     private $concluida = false;
 
     private $anexos = [];
-
-    public function setId($id) 
+    
+    public function setId($id)
     {
         $this->id = (int) $id;
     }
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
@@ -31,9 +31,9 @@ class tarefa
         $this->nome = $nome;
     }
 
-    public function getNome()
+    public function getNome(): string
     {
-        return $this->nome;
+        return $this-> nome;
     }
 
     public function setDescricao($descricao)
@@ -41,18 +41,25 @@ class tarefa
         $this->descricao = $descricao;
     }
 
-    public function getDescricao()
+    public function getDescricao(): string
     {
         return $this->descricao;
     }
 
-    public function setPrazo($prazo)
+    public function setPrazo(DateTime|null $prazo)
     {
         $this->prazo = $prazo;
     }
 
-    public function getPrazo()
+    public function getPrazo(): DateTime|null
     {
+        if(is_string($this->prazo) && !empty($this->prazo)) {
+            $this->prazo =
+                DateTime::createFromFormat("Y-m-d", $this->prazo);
+        } elseif ($this->prazo == "") {
+            $this->prazo = null;
+        }
+
         return $this->prazo;
     }
 
@@ -61,7 +68,7 @@ class tarefa
         $this->prioridade = $prioridade;
     }
 
-    public function getPrioridade()
+    public function getPrioridade():int
     {
         return $this->prioridade;
     }
@@ -71,7 +78,7 @@ class tarefa
         $this->concluida = $concluida;
     }
 
-    public function getConcluida()
+    public function getConcluida(): bool
     {
         return $this->concluida;
     }
@@ -80,7 +87,7 @@ class tarefa
     {
         $this->anexos = [];
 
-        foreach($anexos as $anexo) {
+        foreach ($anexos as $anexo) {
             $this->adicionarAnexo($anexo);
         }
     }
@@ -90,8 +97,8 @@ class tarefa
         array_push($this->anexos, $anexo);
     }
 
-    public function getAnexos()
+    public function getAnexos(): array
     {
         return $this->anexos;
     }
-}   
+}

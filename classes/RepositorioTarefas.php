@@ -10,8 +10,12 @@ class RepositorioTarefas
 
     public function salvar(Tarefa $tarefa)
     {
-        $nome = $tarefa-> getNome();
-        $descricao = $tarefa->getDescricao();
+        $nome = $this->conexao->escape_string(
+            $tarefa->getNome()
+        );
+        $descricao = $this->conexao->escape_string(
+            $tarefa->getDescricao()
+        );
         $prioridade = $tarefa->getPrioridade();
         $prazo = $tarefa->getPrazo();
         $concluida = ($tarefa->getConcluida()) ? 1 : 0;
@@ -43,8 +47,8 @@ class RepositorioTarefas
     public function atualizar(Tarefa $tarefa)
     {
         $id = $tarefa->getId();
-        $nome = $tarefa->getNome();
-        $descricao = $tarefa->getDescricao();
+        $nome = $this->conexao->escape_string($tarefa->getNome());
+        $descricao = $this->conexao->escape_string($tarefa->getDescricao());
         $prioridade = $tarefa->getPrioridade();
         $prazo = $tarefa->getPrazo();
 
@@ -52,7 +56,7 @@ class RepositorioTarefas
 
         if (is_object($prazo)) {
             $prazo = "'{$prazo->format('Y-m-d')}'";
-        } else if ($prazo == '') {
+        } elseif ($prazo == '') {
             $prazo = 'NULL';
         } else {
             $prazo = "'{$prazo}'";
@@ -73,13 +77,13 @@ class RepositorioTarefas
     public function buscar(int $tarefa_id = 0)
     {
         if($tarefa_id > 0) {
-            return $this ->buscar_tarefa($tarefa_id);
+            return $this->buscar_tarefa($tarefa_id);
         } else {
-            return $this ->buscar_tarefas();
+            return $this->buscar_tarefas();
         }
     }
 
-    private function buscar_tarefas(): array
+    private function buscar_tarefas()
     {
         $sqlBusca = 'SELECT * FROM tarefas';
         $resultado = $this->conexao->query($sqlBusca);
@@ -87,19 +91,23 @@ class RepositorioTarefas
         $tarefas = [];
 
         while ($tarefa = $resultado->fetch_object('Tarefa')) {
-            $tarefas[] = $tarefa;
+            $tarefa->setAnexos(
+                $this->buscar_anexos($tarefa->getId())
+            );
+            $tarefa[] = $tarefa;
         }
-
         return $tarefas;
     }
 
-    private function buscar_tarefa(int $tarefa_id): buscar_tarefa
+    private function buscar_tarefa($id)
     {
-        $sqlBusca = "SELECT * FROM tarefas WHERE id = {$tarefa_id}";
-
+        $sqlBusca = 'SELECT * FROM tarefas WHERE id = ' . $id;
         $resultado = $this->conexao->query($sqlBusca);
 
-        $tarefa = $resultado-> fetch_object('Tarefa');
+        $tarefa = $resultado->fetch_object('Tarefa');
+        $tarefa->setAnexos(
+            $this->buscar_anexos($tarefa->getId())
+        );
 
         return $tarefa;
     }
@@ -110,4 +118,51 @@ class RepositorioTarefas
 
         $this->conexao->query($sqlRemover);
     }
+
+    public function buscar_anexos(int $tarefa_id): array
+    {
+        $sqlBusca=
+            "SELECT * FROM anexos WHERE tarefa_id = {$tarefa_id}";
+        $resultado = $this->conexao->query($sqlBusca);
+
+        $anexos = array();
+
+        while ($anexo = $resultado->fetch_object('Anexo')) {
+            $anexos[] = $anexo;
+        }
+
+        return $anexos;
+    }
+
+    public function buscar_anexo(int $anexo_id): buscar_anexo
+    {
+        $sqlBusca = "SELECT * FROM anexos WHERE id = {$anexo_id}";
+        $resultado = $this->conexao->query($sqlBusca);
+
+        return $resultado->fetch_object('Anexo');
+    }
+
+    public function salvar_anexo(Anexo $anexo)
+    {
+        $nome = $this->conexao->escape_string($anexo->getNome());
+        $arquivo = $this->conexao->escape_string($anexo->getArquivo());
+        $sqlGravar = "INSERT INTO anexos
+            (tarefa_id, nome, arquivo)
+            VALUES
+            (
+                {$anexo->getTarefaId()},
+                '{$nome}',
+                '{$arquivo}'
+            )
+        ";
+        $this->conexao->query($sqlGravar);
+    }      
+
+    public function remover_anexo(int $id)
+    {
+        $sqlRemover = "DELETE FROM anexos WHERE id = {$id}";
+
+        $this->db->query($conexao, $sqlRemover);
+    }
+
 }

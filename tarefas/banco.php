@@ -5,6 +5,8 @@ $bdUsuario	= 'sistematarefa';
 $bdSenha	= 'sistema';
 $bdBanco	= 'tarefas';
 
+$conexao = mysqli_connect(BD_SERVIDOR, BD_USUARIO, BD_SENHA, BD_BANCO);
+
 if (mysqli_connect_errno()) {
     echo "Problemas para conectar no banco. Erro: ";
     echo mysqli_connect_error();
@@ -104,7 +106,7 @@ function editar_tarefa($conexao, $tarefa)
     {
         $sql = "SELECT * FROM anexos
             WHERE tarefa_id = {$tarefa_id}";
-        $resultado = mysqli_query($conexao, $sql);
+        $resultado = $conexao->query($sql);
 
         $anexos = [];
 

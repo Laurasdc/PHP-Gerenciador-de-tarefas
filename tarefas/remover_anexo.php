@@ -1,7 +1,17 @@
 <?php
 
 require "config.php";
-include "banco.php";
+require "banco.php";
+require "classes/Anexo.php";
+require "classes/RepositorioTarefas.php";
+
+$repositorio_tarefas = new RepositorioTarefas($mysqli);
+$anexo = $repositorio_tarefas->buscar_anexo($_GET['id']);
+$repositorio_tarefas->remover_anexo($anexo->getId());
+unlik('anexos/' . $anexo->getArquivo());
+
+header('Location: tarefa.php?id=' . $anexo->getTarefaId());
+
 
 $anexo = buscar_anexo($conexao, $_GET['id']);
 
