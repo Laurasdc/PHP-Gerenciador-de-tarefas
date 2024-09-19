@@ -1,20 +1,24 @@
 <?php
 
-session_start();
+$exibir_tabela = true;
 
-require "config.php";
-require "banco.php";
-require "ajudantes.php";
-require "classes/Tarefa.php";
-require "classes/Anexo.php";
-require "classes/RepositorioTarefas.php";
+$tem_erros = false;
+$erros_validacao = [];
 
-$repositorio_tarefas = new RepositorioTarefas($mysqli);
-$tarefa = $repositorio_tarefas->buscar($_GET['id']);
+$tarefa = new Tarefa();
+$tarefa->setPrioridade(1);
+
+try {
+    $tarefa = $repositorio_tarefas->buscar($_GET['id']);
+} catch (Exception $e) {
+    http_response_code(404);
+    echo "Erro ao buscar tarefa: " . $e->getMessage();
+    die();
+}
 
 $exibir_tabela = false;
 $tem_erros = false;
-$erros_validacao = [];
+$erros_validacao = array();
 
 if (tem_post()) {
 
@@ -57,17 +61,14 @@ if (tem_post()) {
     if (! $tem_erros) {
         $repositorio_tarefas->atualizar($tarefa);
 
-        if (
-            isset($_POST['lembrete'])
-            &&
-            $_POST['lembrete'] == '1'
-        ) {
+        if (isset($_POST['lembrete'])
+            && $_POST['lembrete'] == '1') {
             enviar_email($tarefa);
         }
 
-        header('Location: tarefas.php');
+        header('Location: index.php?rota=tarefas');
         die();
     }
 }
 
-require "template.php";
+require __DIR__ . "/../views/template.php";

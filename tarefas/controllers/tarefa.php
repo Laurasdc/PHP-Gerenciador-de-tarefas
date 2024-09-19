@@ -1,15 +1,20 @@
 <?php
 
-require "config.php";
-require "banco.php";
-require "ajudantes.php";
-require "classes/Tarefa.php";
-require "classes/Anexo.php";
-require "classes/RepositorioTarefas.php";
+$exibir_tabela = true;
 
-$repositorio_tarefas = new RepositorioTarefas($mysqli);
+$tem_erros = false;
+$erros_validacao = [];
 
-$tarefa = repositorio_tarefas->buscar($_GET['id']);
+$tarefa = new Tarefa();
+$tarefa->setPrioridade(1);
+
+try{
+    $tarefa = $repositorio_tarefas->buscar($_GET['id']);
+} catch (Exception $e) {
+    http_response_code(404);
+    echo "Erro ao buscar tarefa: " . $e->getMessage();
+    die();
+}
 
 $tem_erros = false;
 $erros_validacao = array();

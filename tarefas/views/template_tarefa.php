@@ -2,14 +2,14 @@
     <head>
         <meta charset="utf-8" />
         <title>Gerenciador de Tarefas</title>
-        <link rel="stylesheet" href="tarefas.css"
+        <link rel="stylesheet" href="assets/tarefas.css"
               type="text/css"/>
     </head>
     <body>
         <div class="bloco_principal"> 
-            <h1>Tarefa? <?php echo $tarefa->getNome(); ?></h1>
+            <h1>Tarefa? <?php echo htmlentities($tarefa->getNome()); ?></h1>
             <p>
-                <a href="tarefas.php">
+                <a href="index.php?rota=tarefas">
                     Voltar para a lista de tarefas
                 </a>
             </p>  
@@ -34,33 +34,23 @@
                     traduz_prioridade($tarefa->gePrioridade()); ?>
             </php>
 
-            <h2>Anexos</h2>
             <!-- lista de anexos -->
-            <?php if (count($tarefa->getAnexos()) > 0) : ?>
-                <table>
-                    <tr>
-                        <th>Arquivo</th>
-                        <th>Opções</th>
-                    </tr>
 
-                    <?php foreach ($tarefa->getAnexos() as $anexo): ?>
-                        <tr>
-                            <td><?php echo $anexo->getNome(); ?></td>
-                            <td>
-                                <a href="anexos/<?php echo $anexo->getArquivo; ?>">
-                                    Download
-                                </a>
-                                <a href="remover_anexo.php?id=<?php echo $anexo->getId(); ?>">
-                                    Remover
-                                </a>
-                            </td>
-                    </tr>
+            <?php foreach ($tarefa->getAnexos() as $anexo): ?>
+                <tr>
+                    <td><?php echo htmlentities($anexo->getNome()); ?></td>
+                    <td>
+                        <a href="anexos/<?php echo $anexo->getArquivo(); ?>">
+                            Download
+                        </a>
+                        <a href="index.php?rota=remover_anexo&id=<?php
+                            echo $anexo->getId() 
+                        ?>">Remover</a>
+                    </td>
+                </tr>
                 <?php endforeach; ?>
 
             </table>
-        <?php else : ?>
-            <p>Não há anexos para esta tarefa.</p>
-        <?php endif; ?>
 
             <!-- formulário para um novo anexo -->
             <form action="" method="post" enctype="multipart/form-data">

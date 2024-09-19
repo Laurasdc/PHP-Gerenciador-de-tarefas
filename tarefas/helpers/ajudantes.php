@@ -111,21 +111,21 @@ function validar_data($data)
 function tratar_anexo($anexo) {
     $padrao = '/^;+(\.pdf|\.zip)$/';
     $resultado = preg_match($padrao, $anexo['name']);
-    if ($resultado == 0) {
+    if ($resultado) {
         return false;
     }
 
     move_uploaded_file(
         $anexo['tmp_name'],
-        "anexos/{$anexo['name']}"
+        __DIR__ . "/../anexos/{$anexo['name']}"
     );
 
     return true;
 }
 
-function enviar_email(Tarefa $tarefa)
+function enviar_email($tarefa)
 {
-    include "bibliotecas/PHPMailer/inc.php";
+    require __DIR__ . "/../libs/PHPMailer/inc.php";
 
     $corpo = preparar_corpo_email($tarefa);
 
@@ -147,7 +147,9 @@ function enviar_email(Tarefa $tarefa)
     $email->msgHTML($corpo);
 
     foreach ($tarefa->getAnexos() as $anexo) {
-        $email-> addAttachment("anexos/{$anexo->getArquivo()}");
+        $email-> addAttachment(
+            __DIR__ . "/../anexos/{anexo->getArquivo()}"
+        );
     }
 
     $email->send();
@@ -157,18 +159,11 @@ function enviar_email(Tarefa $tarefa)
 
 function preparar_corpo_email(Tarefa $anexo)
 {
-    //Falar para o PHP que não é para enviar
-    // o resultado do processamento para o navegador:
     ob_start();
+    include __DIR__ . "/../views/template_email.php";
 
-    //Incluir o arquivo template_email.php?
-    include "template_email.php";
-
-    //Guardar o conteúdo do arquivo em uma variável;
     $corpo = ob_get_contents();
 
-    //Falar para o PHP que ele pode voltar
-    // a mandar conteúdos para o navegador
     ob_end_clean();
     
     return $corpo;
