@@ -1,11 +1,12 @@
-
 <?php
+
+namespace Tarefas\Models;
 
 class RepositorioTarefas
 {
     private $pdo;
 
-    public function __construct(PDO $pdo)
+    public function __construct(\PDO $pdo)
     {
         $this->pdo = $pdo;
     }
@@ -64,7 +65,7 @@ class RepositorioTarefas
         ]);
     }
 
-    public function buscar($tarefa_id = 0): Tarefa|array
+    public function buscar($tarefa_id = 0)
     {
         if ($tarefa_id > 0) {
             return $this->buscar_tarefa($tarefa_id);
@@ -78,8 +79,8 @@ class RepositorioTarefas
         $sqlBusca = 'SELECT * FROM tarefas';
         $resultado = $this->pdo->query(
             $sqlBusca,
-            PDO::FETCH_CLASS,
-            'Tarefa'
+            \PDO::FETCH_CLASS,
+            'Tarefas\Models\Tarefa'
         );
 
         $tarefas = [];
@@ -100,7 +101,7 @@ class RepositorioTarefas
             'id' => $id,
         ]);
 
-        $tarefa = $query->fetchObject('Tarefa');
+        $tarefa = $query->fetchObject('Tarefas\Models\Tarefa');
 
         if (! is_object($tarefa)) {
             throw new Exception("A tarefa com o id {$id} não existe");
@@ -136,7 +137,7 @@ class RepositorioTarefas
 
         $anexos = array();
 
-        while ($anexo = $query->fetchObject('Anexo')) {
+        while ($anexo = $query->fetchObject('Tarefas\Models\Anexo')) {
             $anexos[] = $anexo;
         }
 
@@ -151,7 +152,7 @@ class RepositorioTarefas
             'id' => $anexo_id,
         ]);
 
-        $anexo = $query->fetchObject('Anexo');
+        $anexo = $query->fetchObject('Tarefas\Models\Anexo');
 
         if (! is_object($anexo)) {
             throw new Exception("O anexo com o id {$id} não existe");

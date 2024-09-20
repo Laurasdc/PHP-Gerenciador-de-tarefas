@@ -26,11 +26,13 @@
                 </td>
                 <td>
                     <?php echo 
-                        traduz_prioridade($tarefa->getPrioridade()); ?>
+                        traduz_prioridade(
+                            $tarefa->getPrioridade()); ?>
                 </td>
                 <td>
                     <?php echo 
-                        traduz_concluida($tarefa->getConcluida()); ?>
+                        traduz_concluida(
+                            $tarefa->getConcluida()); ?>
                 </td>
                 <td>
                     <a href="index.php?rota=editar&id=<?php echo $tarefa->getId(); ?>">

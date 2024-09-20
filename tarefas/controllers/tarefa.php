@@ -5,7 +5,7 @@ $exibir_tabela = true;
 $tem_erros = false;
 $erros_validacao = [];
 
-$tarefa = new Tarefa();
+$tarefa = new Tarefa\Models\Tarefa();
 $tarefa->setPrioridade(1);
 
 try{
@@ -47,4 +47,4 @@ if (tem_post()) {
 
 }
 
-include "template_tarefa.php";
+include __DIR__ . "/../views/template_tarefa.php";

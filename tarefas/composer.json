@@ -1,0 +1,19 @@
+{
+    "name": "x556565/tarefas",
+    "description": "Um sistema de tarefas",
+    "type": "project",
+    "require": {
+        "phpmailer/phpmailer": "^6.9"
+    },
+    "autoload": {
+        "psr-4": {
+            "X556565\\Tarefas\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Laura Souza de Carvalho",
+            "email": "laurascarvalho@prefeitura.sp.gov.br"
+        }
+    ]
+}

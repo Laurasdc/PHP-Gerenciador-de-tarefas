@@ -1,42 +1,47 @@
 <?php
 
+namespace Tarefas\Models;
+
 class Tarefa
 {
     private $id = 0;
-
-    private $nome = "";
-
-    private $descricao = "";
-
+    private $nome = '';
+    private $descricao = '';
     private $prazo = null;
-
     private $prioridade = 1;
-
     private $concluida = false;
 
-    private $anexos = [];
-    
-    public function setId($id)
+    /**
+     * @var Array de Anexo
+     */
+    private $anexos;
+
+    public function __construct()
     {
-        $this->id = (int) $id;
+        $this->anexos = [];
     }
 
-    public function getId(): int
+    public function setId(int $id)
+    {
+        $this->id = $id;
+    }
+
+    public function getId()
     {
         return $this->id;
     }
 
-    public function setNome($nome)
+    public function setNome(string $nome)
     {
         $this->nome = $nome;
     }
 
     public function getNome(): string
     {
-        return $this-> nome;
+        return $this->nome;
     }
 
-    public function setDescricao($descricao)
+    public function setDescricao(string $descricao)
     {
         $this->descricao = $descricao;
     }
@@ -46,16 +51,15 @@ class Tarefa
         return $this->descricao;
     }
 
-    public function setPrazo(DateTime|null $prazo)
+    public function setPrazo(?\DateTime $prazo)
     {
         $this->prazo = $prazo;
     }
 
-    public function getPrazo(): DateTime|null
+    public function getPrazo(): ?\DateTime
     {
-        if(is_string($this->prazo) && !empty($this->prazo)) {
-            $this->prazo =
-                DateTime::createFromFormat("Y-m-d", $this->prazo);
+        if (is_string($this->prazo) && ! empty($this->prazo)) {
+            $this->prazo = \DateTime::createFromFormat("Y-m-d", $this->prazo);
         } elseif ($this->prazo == "") {
             $this->prazo = null;
         }
@@ -63,17 +67,17 @@ class Tarefa
         return $this->prazo;
     }
 
-    public function setPrioridade($prioridade)
+    public function setPrioridade(int $prioridade)
     {
         $this->prioridade = $prioridade;
     }
 
-    public function getPrioridade():int
+    public function getPrioridade(): int
     {
         return $this->prioridade;
     }
 
-    public function setConcluida($concluida)
+    public function setConcluida(bool $concluida)
     {
         $this->concluida = $concluida;
     }
